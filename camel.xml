@@ -8,26 +8,30 @@
              http://camel.apache.org/schema/blueprint/cxf http://camel.apache.org/schema/cxf/camel-cxf-blueprint.xsd
              http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
 
-             <camelContext xmlns="http://camel.apache.org/schema/blueprint">
+             <camelContext id="SolaCamelConsumerContext" xmlns="http://camel.apache.org/schema/blueprint">
 
                 <route id="SolaCamelConsumer">
-                  <from uri="timer:myTimer?fixedRate=true&amp;period=10000" />
-                  <setHeader headerName="REST-API-KEY">
-                      <constant>RS-T#ORD005-3097</constant>
-                  </setHeader>
-                  <setHeader headerName="REST-ACTION">
-                      <constant>/CCP:UTF-8/HCP:037</constant>
-                  </setHeader>
-                  <setBody><constant> </constant></setBody>
-                  <setHeader headerName="CamelHttpMethod">
-                      <constant>GET</constant>
-                  </setHeader>
-                  <setHeader headerName="Exchange.HTTP_PATH">
-                      <constant>/v01/Customers/10/Orders</constant>
-                  </setHeader>
-                  <to uri="http://mainframe:1845?throwExceptionOnFailure=false" />
-                  <convertBodyTo type="java.lang.String"></convertBodyTo>
-                  <to uri="log:solaCamel?level=INFO" />
+                    <from uri="timer:myTimer?fixedRate=true&amp;period=10000"/>
+                    <setHeader headerName="REST-API-KEY">
+                        <constant>RS-METR#D01-0871</constant>
+                    </setHeader>
+                    <setHeader headerName="REST-ACTION">
+                        <constant>/CCP:UTF-8/HCP:037</constant>
+                    </setHeader>
+                    <setBody>
+                        <constant> </constant>
+                    </setBody>
+                    <setHeader headerName="CamelHttpMethod">
+                        <constant>GET</constant>
+                    </setHeader>
+                    <setHeader headerName="Exchange.HTTP_PATH">
+                        <simple>/v01/Metrics?ENDDATE=2021-04-13&amp;STARTDATE=2021-04-13</simple>
+                    </setHeader>
+                    <to uri="http://mainframe:1845?throwExceptionOnFailure=false"/>
+                    <split>
+                        <jsonpath>$.Metrics.METRICSDATA.Row</jsonpath>
+                        <to uri="log:solaCamel?level=INFO&amp;showAll=true"/>
+                    </split>
                 </route>
 
             </camelContext>
